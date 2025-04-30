@@ -1,0 +1,145 @@
+Here are the correct answers for your SQL and PL/SQL multiple-choice and fill-in-the-blank questions:
+
+---
+
+### 1–10
+1. A – Students whose name starts with A  
+2. C – ALIAS  
+3. 'ABA' – (From position 5 in 'DATABASE', 3 characters: 'A', 'B', 'A')  
+4. DISTINCT  
+5. B – Employees from Chennai departments  
+6. GROUP BY  
+7. D – DROP  
+8. HAVING  
+9. C – LENGTH()  
+10. AS
+
+---
+
+### 11–20
+11. B – COMMIT  
+12. SYSDATE  
+13. A – DECLARE  
+14. C – %FOUND  
+15. BEFORE or AFTER  
+16. EXIT  
+17. C – LEFT JOIN  
+18. CLOSE  
+19. <<label_name>>  
+20. A – CREATE FUNCTION salary() RETURN NUMBER IS
+
+---
+
+### 21–30
+21. B – ALTER TABLE Product ADD reorder INT DEFAULT 50;  
+22. DROP  
+23. C – To process each row returned by a query one at a time  
+24. Ascending or Descending  
+25. BEGIN, EXCEPTION  
+26. DDL (Data Definition Language)  
+27. COMMIT  
+28. SAVEPOINT  
+29. INSERT, UPDATE, DELETE  
+30. INDEX
+
+---
+
+### 31–40
+31. AVG(salary) GROUP BY dept_id  
+32. customer_id  
+33. B – UNIQUE  
+34. B – CREATE PROCEDURE  
+35. B – Automatically executing actions on table events  
+36. VIEW  
+37. C – Checks if a year is a leap year  
+38. FOREIGN KEY  
+39. JOIN  
+40. FUNCTION
+
+---
+
+### 41–50
+41. C – WHERE  
+42. B – Foreign key  
+43. A – DROP  
+44. B – NULL  
+45. Foreign key  
+46. GROUP BY  
+47. C – UPDATE  
+48. MAX()  
+49. CHECK  
+50. B – COUNT()
+
+---
+
+### 51–60
+51. C – CREATE VIEW  
+52. ALTER TABLE ... ADD  
+53. VIEW  
+54. C – EXCEPTION  
+55. PRIMARY  
+56. EXCEPTION  
+57. D – FULL OUTER JOIN  
+58. B – Automatically execute actions on events  
+59. ORDER BY  
+60. Cursor
+
+---
+
+### 61–70
+61. B – Count of unique departments  
+62. C – CREATE TABLE student (id INT, name VARCHAR(50));  
+63. TRUNCATE  
+64. ORDER BY  
+65. C – Students with marks between 60 and 80 (inclusive)  
+66. B – SELECT name FROM employee WHERE dept_id != 10;  
+67. Before  
+68. UPDATE  
+69. B – HAVING  
+70. HAVING
+
+---
+
+### 71–80
+71. C – Maximum salary from Sales department  
+72. C – ROLLBACK  
+73. Dynamic  
+74. COUNT()  
+75. B – CREATE VIEW high_salary AS SELECT * FROM employee WHERE salary > 50000;  
+76. C – Compilation Error (missing space in v_totalNUMBER)  
+77. Exception handling block  
+78. Explicit  
+79. C – SELECT * FROM employee WHERE manager_id IS NULL;  
+80. WHERE
+
+---
+
+### 81–90
+81. CREATE TABLE  
+82. Primary key  
+83. DESC  
+84. Adds 2 records – Raj (HR), Meena (CSE)  
+85. B – FULL OUTER JOIN  
+86. B – Savepoint  
+87. FOREIGN KEY  
+88. C – Procedural Language/Structured Query Language  
+89. SQL  
+90. Database driver (like ODBC/JDBC)
+
+---
+
+### 91–100
+91. C – CLOSE  
+92. "Square of 6 is 36"  
+93. C – Data Manipulation Procedure  
+94. C – Stored  
+95. UPDATE  
+96. A – User-defined  
+97. COMMIT  
+98. B – Partial  
+99. B – Boyce-Codd Normal Form  
+100. A – Driver
+
+---
+
+Let me know if you'd like this in a downloadable format (PDF/Excel) or if you want an explanation for any of the answers.
