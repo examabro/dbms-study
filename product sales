@@ -1,0 +1,111 @@
+-- Create Product Table
+CREATE TABLE Product (
+  Prodid INT PRIMARY KEY,
+  Prodesc VARCHAR(100),
+  Price DECIMAL(10, 2),
+  Stock INT
+);
+
+-- Create Sales Table
+CREATE TABLE Sales (
+  Salesid INT PRIMARY KEY,
+  Prodid INT,
+  qty INT,
+  FOREIGN KEY (Prodid) REFERENCES Product(Prodid)
+);
+
+
+-- Insert into Product Table
+INSERT INTO Product VALUES (1, 'Laptop', 50000, 10);
+INSERT INTO Product VALUES (2, 'Mobile', 20000, 15);
+
+-- Insert into Sales Table
+INSERT INTO Sales VALUES (101, 1, 5);
+INSERT INTO Sales VALUES (102, 2, 3);
+
+
+1-->-- Add the "Reorder" column in Product table
+ALTER TABLE Product ADD COLUMN Reorder INT;
+
+-- Update the Reorder column for all products with the value 50
+UPDATE Product SET Reorder = 50;
+
+
+2-->SELECT S.Prodid
+FROM Sales S
+ORDER BY S.qty DESC;
+
+
+3-->DELIMITER //
+
+CREATE FUNCTION Fibonacci(n INT) 
+RETURNS VARCHAR(255)
+DETERMINISTIC
+BEGIN
+  DECLARE fib_series VARCHAR(255) DEFAULT '0, 1';
+  DECLARE a INT DEFAULT 0;
+  DECLARE b INT DEFAULT 1;
+  DECLARE c INT DEFAULT 0;
+  DECLARE i INT DEFAULT 2;
+
+  WHILE i < n DO
+    SET c = a + b;
+    SET fib_series = CONCAT(fib_series, ', ', c);
+    SET a = b;
+    SET b = c;
+    SET i = i + 1;
+  END WHILE;
+  
+  RETURN fib_series;
+END;
+//
+
+DELIMITER ;
+
+4-->import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+
+# Function to validate user
+def validate_user():
+    username = entry_username.get()
+    password = entry_password.get()
+
+    # Connect to SQLite database
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+
+    # Query to check username and password
+    cursor.execute("SELECT * FROM Users WHERE username=? AND password=?", (username, password))
+    user = cursor.fetchone()
+
+    # Check if the user exists
+    if user:
+        messagebox.showinfo("Login Successful", f"Welcome, {username}!")
+    else:
+        messagebox.showerror("Invalid Login", "Username or Password is incorrect.")
+
+    conn.close()
+
+# Setup the main window
+window = tk.Tk()
+window.title("Login Form")
+
+# Username Label and Entry
+tk.Label(window, text="Username").pack(pady=5)
+entry_username = tk.Entry(window)
+entry_username.pack(pady=5)
+
+# Password Label and Entry
+tk.Label(window, text="Password").pack(pady=5)
+entry_password = tk.Entry(window, show="*")
+entry_password.pack(pady=5)
+
+# Login Button
+login_button = tk.Button(window, text="Login", command=validate_user)
+login_button.pack(pady=20)
+
+# Run the application
+window.mainloop()
+
+

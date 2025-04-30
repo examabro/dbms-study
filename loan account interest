@@ -1,0 +1,76 @@
+-- Create Customer Table
+CREATE TABLE Customer (
+  Custid INT PRIMARY KEY,
+  Custname VARCHAR(100),
+  Addr VARCHAR(200),
+  phno VARCHAR(15),
+  panno VARCHAR(15)
+);
+
+-- Create Loan Table
+CREATE TABLE Loan (
+  Loanid INT PRIMARY KEY,
+  Amount DECIMAL(10, 2),
+  Interest DECIMAL(5, 2),
+  Custid INT,
+  FOREIGN KEY (Custid) REFERENCES Customer(Custid)
+);
+
+-- Create Account Table
+CREATE TABLE Account (
+  Acctno INT PRIMARY KEY,
+  Accbal DECIMAL(10, 2),
+  Custid INT,
+  FOREIGN KEY (Custid) REFERENCES Customer(Custid)
+);
+
+
+-- Insert into Customer Table
+INSERT INTO Customer VALUES (1, 'ARUN', '123 Street, City', '9876543210', 'A12345');
+INSERT INTO Customer VALUES (2, 'PRIYA', '456 Avenue, City', '9123456789', 'B12345');
+
+-- Insert into Loan Table
+INSERT INTO Loan VALUES (101, 50000, 5, 1);
+INSERT INTO Loan VALUES (102, 30000, 4, 2);
+
+-- Insert into Account Table
+INSERT INTO Account VALUES (1001, 20000, 1);
+INSERT INTO Account VALUES (1002, 15000, 2);
+
+
+
+1-->SELECT Accbal
+FROM Account
+WHERE Custid = (SELECT Custid FROM Customer WHERE Custname = 'ARUN');
+
+
+2-->UPDATE Loan
+SET Interest = Interest + 1
+WHERE Custid IN (
+  SELECT Custid
+  FROM Account A
+  JOIN Loan L ON A.Custid = L.Custid
+  WHERE A.Accbal > 0.5 * L.Amount
+);
+
+
+3-->CREATE VIEW CustomerLoanDetails AS
+SELECT A.Custid, A.Accbal, L.Amount AS LoanAmount
+FROM Account A
+JOIN Loan L ON A.Custid = L.Custid;
+
+
+4-->DELIMITER //
+
+CREATE TRIGGER CheckMinimumBalance
+BEFORE INSERT ON Account
+FOR EACH ROW
+BEGIN
+  IF NEW.Accbal < 1000 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Minimum balance must be at least 1000';
+  END IF;
+END;
+//
+
+DELIMITER ;
+

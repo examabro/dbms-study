@@ -1,0 +1,72 @@
+-- Create Customer Table
+CREATE TABLE Customer (
+  Custid INT PRIMARY KEY,
+  Custname VARCHAR(50),
+  Age INT,
+  Phone VARCHAR(15)
+);
+
+-- Create Loan Table
+CREATE TABLE Loan (
+  Loanid INT PRIMARY KEY,
+  Amount INT,
+  Custid INT,
+  EMI INT,
+  FOREIGN KEY (Custid) REFERENCES Customer(Custid)
+);
+
+
+-- Insert some sample data into Customer table
+INSERT INTO Customer VALUES (1, 'Arun', 28, '9876543210');
+INSERT INTO Customer VALUES (2, 'Priya', 30, '9123456789');
+INSERT INTO Customer VALUES (3, 'Ravi', 25, '9988776655');
+
+-- Insert some sample data into Loan table
+INSERT INTO Loan VALUES (101, 60000, 1, 2500);
+INSERT INTO Loan VALUES (102, 40000, 2, 1800);
+
+
+1-->SELECT Custname
+FROM Customer
+WHERE Custid IN (
+  SELECT Custid
+  FROM Loan
+  WHERE Amount > 50000
+);
+
+
+2-->SELECT Custid
+FROM Customer
+WHERE Custid NOT IN (
+  SELECT Custid
+  FROM Loan
+);
+
+
+3-->SELECT COUNT(*) AS Total_Loans
+FROM Loan;
+
+
+4-->DELIMITER //
+
+CREATE PROCEDURE p2(IN l INT)
+BEGIN
+  DECLARE l1 INT;
+
+  -- Try to get the Loan ID into l1
+  SELECT Loanid INTO l1 FROM Loan WHERE Loanid = l;
+
+  -- Check if loan ID is not found (NULL)
+  IF l1 IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data not found';
+  ELSE
+    -- If loan ID is found, show Custid and Amount
+    SELECT Custid, Amount FROM Loan WHERE Loanid = l;
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data found';
+  END IF;
+
+END;
+//
+
+DELIMITER ;
+

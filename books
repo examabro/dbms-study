@@ -1,0 +1,80 @@
+-- Create Book Table
+CREATE TABLE Book (
+  Bookid INT PRIMARY KEY,
+  Book_name VARCHAR(100),
+  Author VARCHAR(100),
+  Publication VARCHAR(50),
+  Price DECIMAL(10, 2)
+);
+
+-- Create User Table
+CREATE TABLE User (
+  Userid INT PRIMARY KEY,
+  Name VARCHAR(100),
+  Dept VARCHAR(50),
+  Bookid INT,
+  Accdate DATE,
+  FOREIGN KEY (Bookid) REFERENCES Book(Bookid)
+);
+
+
+-- Insert into Book Table
+INSERT INTO Book VALUES (1, 'Data Structures', 'Mark Z', 'Wiley', 500);
+INSERT INTO Book VALUES (2, 'Algorithms', 'John Smith', 'OReilly', 450);
+INSERT INTO Book VALUES (3, 'Database Concepts', 'Michael J', 'Wiley', 600);
+
+-- Insert into User Table
+INSERT INTO User VALUES (101, 'Alice', 'CS', 1, '2025-04-01');
+INSERT INTO User VALUES (102, 'Bob', 'IT', 2, '2025-04-03');
+INSERT INTO User VALUES (103, 'Charlie', 'ECE', 3, '2025-04-05');
+
+
+1-->SELECT U.Name
+FROM User U
+JOIN Book B ON U.Bookid = B.Bookid
+WHERE B.Price = (SELECT MAX(Price) FROM Book);
+
+
+2-->SELECT Userid, COUNT(*) AS Book_Count
+FROM User
+GROUP BY Userid;
+
+
+3-->SELECT Book_name, Author, Price
+FROM Book
+WHERE Publication = 'Wiley';
+
+
+4-->DELIMITER //
+
+CREATE PROCEDURE GetBookDetails(IN p_Bookid INT)
+BEGIN
+  DECLARE v_Bookname VARCHAR(100);
+  DECLARE v_Author VARCHAR(100);
+  DECLARE v_Publication VARCHAR(50);
+  DECLARE v_Price DECIMAL(10, 2);
+
+  -- Try to fetch book details
+  BEGIN
+    SELECT Book_name, Author, Publication, Price
+    INTO v_Bookname, v_Author, v_Publication, v_Price
+    FROM Book
+    WHERE Bookid = p_Bookid;
+
+    -- Display book details
+    DBMS_OUTPUT.PUT_LINE('Book Name: ' || v_Bookname);
+    DBMS_OUTPUT.PUT_LINE('Author: ' || v_Author);
+    DBMS_OUTPUT.PUT_LINE('Publication: ' || v_Publication);
+    DBMS_OUTPUT.PUT_LINE('Price: ' || v_Price);
+
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE('No Book found with the given Bookid');
+    WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('An error occurred while fetching the book details');
+  END;
+END;
+//
+
+DELIMITER ;
+

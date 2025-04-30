@@ -1,0 +1,79 @@
+-- Create Booth Table
+CREATE TABLE Booth (
+  Boothid INT PRIMARY KEY,
+  Location VARCHAR(50),
+  BIncharge VARCHAR(50)
+);
+
+-- Create Voter Table
+CREATE TABLE Voter (
+  VoterId INT PRIMARY KEY,
+  Votername VARCHAR(50),
+  Gender VARCHAR(10),
+  Boothid INT,
+  Checkvote INT, -- 1 for voted, 0 for not voted
+  FOREIGN KEY (Boothid) REFERENCES Booth(Boothid)
+);
+
+
+INSERT INTO Booth VALUES (101, 'Chennai', 'Ravi');
+INSERT INTO Booth VALUES (102, 'Salem', 'Priya');
+
+INSERT INTO Voter VALUES (1, 'Arun', 'Male', 101, 1);
+INSERT INTO Voter VALUES (2, 'Meena', 'Female', 101, 0);
+INSERT INTO Voter VALUES (3, 'Ravi', 'Male', 102, 1);
+INSERT INTO Voter VALUES (4, 'Divya', 'Female', 102, 1);
+
+
+1-->SELECT Boothid, COUNT(*) AS Voter_Count
+FROM Voter
+GROUP BY Boothid;
+
+
+1-->SELECT COUNT(*) AS Male_Voters_Voted
+FROM Voter
+WHERE Gender = 'Male' AND Checkvote = 1;
+
+
+2-->SELECT COUNT(*) AS Total_Voted
+FROM Voter
+WHERE Checkvote = 1;
+
+
+3-->SELECT B.Boothid, B.Location, COUNT(V.VoterId) AS Voted_Count
+FROM Booth B
+JOIN Voter V ON B.Boothid = V.Boothid
+WHERE V.Checkvote = 1
+GROUP BY B.Boothid, B.Location;
+
+
+4-->DELIMITER //
+
+CREATE FUNCTION GetPollPercentage(bid INT)
+RETURNS DECIMAL(5,2)
+DETERMINISTIC
+BEGIN
+  DECLARE total INT;
+  DECLARE voted INT;
+  DECLARE percentage DECIMAL(5,2);
+
+  -- Get total voters in the booth
+  SELECT COUNT(*) INTO total FROM Voter WHERE Boothid = bid;
+
+  -- If no voters in the booth, throw error
+  IF total = 0 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No voters in this booth';
+  END IF;
+
+  -- Get voted count
+  SELECT COUNT(*) INTO voted FROM Voter WHERE Boothid = bid AND Checkvote = 1;
+
+  -- Calculate percentage
+  SET percentage = (voted / total) * 100;
+
+  RETURN percentage;
+END;
+//
+
+DELIMITER ;
+

@@ -1,0 +1,141 @@
+-- Create the 'member' table
+CREATE TABLE member (
+    member_code INT PRIMARY KEY,
+    member_name VARCHAR(50),
+    phoneno VARCHAR(15)
+);
+
+-- Create the 'book' table
+CREATE TABLE book (
+    book_code INT PRIMARY KEY,
+    category_code INT,
+    book_name VARCHAR(100),
+    cost DECIMAL(10, 2)
+);
+
+-- Create the 'issue' table
+CREATE TABLE issue (
+    member_code INT,
+    book_code INT,
+    issue_date DATE,
+    return_date DATE,
+    PRIMARY KEY (member_code, book_code),
+    FOREIGN KEY (member_code) REFERENCES member(member_code),
+    FOREIGN KEY (book_code) REFERENCES book(book_code)
+);
+
+
+
+1-->SELECT m.member_name
+FROM member m
+JOIN issue i ON m.member_code = i.member_code
+WHERE i.issue_date = '2007-10-08';
+
+
+2-->SELECT DISTINCT i.member_code
+FROM issue i
+JOIN book b ON i.book_code = b.book_code
+WHERE b.cost > 400.00;
+
+
+3-->DECLARE
+    -- Cursor to fetch members
+    CURSOR member_cursor IS
+        SELECT * FROM member;
+    
+    -- Cursor to fetch books
+    CURSOR book_cursor IS
+        SELECT * FROM book;
+    
+    -- Cursor to fetch issues
+    CURSOR issue_cursor IS
+        SELECT * FROM issue;
+
+    -- Variable to store user input
+    option_number INT;
+
+BEGIN
+    -- Get input from the user for which table to display
+    DBMS_OUTPUT.PUT_LINE('Enter 1 to display Members, 2 for Books, 3 for Issues:');
+    -- Assuming the user inputs a valid number (1, 2, or 3)
+    option_number := &user_option;  -- This can be replaced with a parameter or UI input
+
+    -- Display based on user choice
+    IF option_number = 1 THEN
+        FOR member_record IN member_cursor LOOP
+            DBMS_OUTPUT.PUT_LINE('Member Code: ' || member_record.member_code || ', Member Name: ' || member_record.member_name || ', Phone: ' || member_record.phoneno);
+        END LOOP;
+    ELSIF option_number = 2 THEN
+        FOR book_record IN book_cursor LOOP
+            DBMS_OUTPUT.PUT_LINE('Book Code: ' || book_record.book_code || ', Book Name: ' || book_record.book_name || ', Category Code: ' || book_record.category_code || ', Cost: ' || book_record.cost);
+        END LOOP;
+    ELSIF option_number = 3 THEN
+        FOR issue_record IN issue_cursor LOOP
+            DBMS_OUTPUT.PUT_LINE('Member Code: ' || issue_record.member_code || ', Book Code: ' || issue_record.book_code || ', Issue Date: ' || issue_record.issue_date || ', Return Date: ' || issue_record.return_date);
+        END LOOP;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Invalid Option!');
+    END IF;
+
+END;
+/
+
+4-->import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+
+# Function to register a new member
+def register_member():
+    member_code = entry_member_code.get()
+    member_name = entry_member_name.get()
+    phone_no = entry_phone_no.get()
+
+    if member_code == "" or member_name == "" or phone_no == "":
+        messagebox.showerror("Input Error", "All fields are required!")
+        return
+
+    # Connect to the database
+    conn = sqlite3.connect('library.db')
+    cursor = conn.cursor()
+
+    # Insert the new member data into the member table
+    try:
+        cursor.execute("INSERT INTO member (member_code, member_name, phoneno) VALUES (?, ?, ?)",
+                       (member_code, member_name, phone_no))
+        conn.commit()
+        messagebox.showinfo("Success", "Registration Successful!")
+    except sqlite3.IntegrityError:
+        messagebox.showerror("Error", "Member Code already exists.")
+    
+    # Close the connection
+    conn.close()
+
+# Set up the Tkinter window
+window = tk.Tk()
+window.title("Library User Registration")
+
+# Member Code Label and Entry
+tk.Label(window, text="Member Code").pack(pady=5)
+entry_member_code = tk.Entry(window)
+entry_member_code.pack(pady=5)
+
+# Member Name Label and Entry
+tk.Label(window, text="Member Name").pack(pady=5)
+entry_member_name = tk.Entry(window)
+entry_member_name.pack(pady=5)
+
+# Phone No Label and Entry
+tk.Label(window, text="Phone No").pack(pady=5)
+entry_phone_no = tk.Entry(window)
+entry_phone_no.pack(pady=5)
+
+# Register Button
+register_button = tk.Button(window, text="Register", command=register_member)
+register_button.pack(pady=20)
+
+# Run the application
+window.mainloop()
+
+_code
+WHERE b.cost > 400.00;
+

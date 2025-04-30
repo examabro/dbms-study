@@ -1,0 +1,66 @@
+-- Create Department Table
+CREATE TABLE Dept (
+  Deptno INT PRIMARY KEY,
+  Dname VARCHAR(50),
+  Loc VARCHAR(50),
+  DeptmanagerId INT
+);
+
+-- Create Employee Table
+CREATE TABLE Employee (
+  EmpId INT PRIMARY KEY,
+  Empname VARCHAR(50),
+  Sal INT,
+  Deptno INT,
+  FOREIGN KEY (Deptno) REFERENCES Dept(Deptno)
+);
+
+
+INSERT INTO Dept VALUES (10, 'HR', 'Chennai', 1);
+INSERT INTO Dept VALUES (20, 'IT', 'Bangalore', 2);
+
+INSERT INTO Employee VALUES (1, 'Arun', 30000, 10);
+INSERT INTO Employee VALUES (2, 'Priya', 40000, 20);
+INSERT INTO Employee VALUES (3, 'Ravi', 35000, 10);
+
+
+1-->SELECT Deptno, COUNT(*) AS Emp_Count, AVG(Sal) AS Avg_Salary
+FROM Employee
+GROUP BY Deptno;
+
+
+2-->SELECT E.Empname, D.Dname, E.Sal
+FROM Employee E
+JOIN Dept D ON E.Deptno = D.Deptno;
+
+
+3-->SELECT E.Empname AS Employee, M.Empname AS Manager
+FROM Employee E
+JOIN Dept D ON E.Deptno = D.Deptno
+JOIN Employee M ON D.DeptmanagerId = M.EmpId;
+
+
+4-->DELIMITER //
+
+CREATE FUNCTION GetSalary(eid INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+  DECLARE sal_value INT;
+
+  -- Get salary into variable
+  SELECT Sal INTO sal_value FROM Employee WHERE EmpId = eid;
+
+  -- Return salary
+  RETURN sal_value;
+
+EXCEPTION
+  -- If no data found
+  WHEN NOT FOUND THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Employee Not Found';
+
+END;
+//
+
+DELIMITER ;
+

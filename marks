@@ -1,0 +1,63 @@
+-- Create the Marks table
+CREATE TABLE Marks (
+    Regno INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Dept VARCHAR(50),
+    Subj1 INT,
+    Subj2 INT,
+    Subj3 INT,
+    Total INT
+);
+
+1-->-- Add the 'Total' column to the Marks table
+ALTER TABLE Marks ADD COLUMN Total INT;
+
+-- Update the 'Total' field with the sum of the marks of three subjects
+UPDATE Marks
+SET Total = Subj1 + Subj2 + Subj3;
+
+
+2-->SELECT MAX(Total) AS Second_Maximum_Total
+FROM Marks
+WHERE Total < (SELECT MAX(Total) FROM Marks);
+
+
+3-->SELECT Name
+FROM Marks
+WHERE Total = (SELECT MAX(Total) FROM Marks);
+
+
+4-->DECLARE
+    -- Cursor to fetch student details
+    CURSOR student_cursor IS
+        SELECT Regno, Name, Dept, Subj1, Subj2, Subj3, Total
+        FROM Marks;
+
+    -- Variables to store each student's data
+    v_Regno Marks.Regno%TYPE;
+    v_Name Marks.Name%TYPE;
+    v_Dept Marks.Dept%TYPE;
+    v_Subj1 Marks.Subj1%TYPE;
+    v_Subj2 Marks.Subj2%TYPE;
+    v_Subj3 Marks.Subj3%TYPE;
+    v_Total Marks.Total%TYPE;
+BEGIN
+    -- Open the cursor to fetch student details
+    OPEN student_cursor;
+    
+    -- Fetch and display each student's report
+    LOOP
+        FETCH student_cursor INTO v_Regno, v_Name, v_Dept, v_Subj1, v_Subj2, v_Subj3, v_Total;
+        EXIT WHEN student_cursor%NOTFOUND;
+        
+        -- Print student details
+        DBMS_OUTPUT.PUT_LINE('Regno: ' || v_Regno || ', Name: ' || v_Name || ', Dept: ' || v_Dept || 
+                             ', Subj1: ' || v_Subj1 || ', Subj2: ' || v_Subj2 || ', Subj3: ' || v_Subj3 || 
+                             ', Total: ' || v_Total);
+    END LOOP;
+    
+    -- Close the cursor
+    CLOSE student_cursor;
+END;
+/
+

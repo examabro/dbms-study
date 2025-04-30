@@ -1,0 +1,73 @@
+-- Create Customer Table
+CREATE TABLE Customer (
+  Custid INT PRIMARY KEY,
+  Custname VARCHAR(100),
+  phno VARCHAR(15),
+  pan VARCHAR(15),
+  DOB DATE
+);
+
+-- Create HomeLoan Table
+CREATE TABLE HomeLoan (
+  HLoanid INT PRIMARY KEY,
+  Amount DECIMAL(10, 2),
+  Custid INT,
+  FOREIGN KEY (Custid) REFERENCES Customer(Custid)
+);
+
+-- Create VehicleLoan Table
+CREATE TABLE VehicleLoan (
+  VLoanid INT PRIMARY KEY,
+  Amount DECIMAL(10, 2),
+  Custid INT,
+  FOREIGN KEY (Custid) REFERENCES Customer(Custid)
+);
+
+
+-- Insert into Customer Table
+INSERT INTO Customer VALUES (1, 'Arun', '9876543210', 'A12345', '1985-05-15');
+INSERT INTO Customer VALUES (2, 'Priya', '9123456789', 'B12345', '1990-07-25');
+
+-- Insert into HomeLoan Table
+INSERT INTO HomeLoan VALUES (101, 500000, 1);
+INSERT INTO HomeLoan VALUES (102, 300000, 2);
+
+-- Insert into VehicleLoan Table
+INSERT INTO VehicleLoan VALUES (201, 200000, 1);
+INSERT INTO VehicleLoan VALUES (202, 150000, 2);
+
+
+1-->SELECT DISTINCT H.Custid
+FROM HomeLoan H
+JOIN VehicleLoan V ON H.Custid = V.Custid;
+
+
+2-->SELECT Custid
+FROM Customer
+WHERE Custid NOT IN (
+  SELECT Custid FROM HomeLoan
+  UNION
+  SELECT Custid FROM VehicleLoan
+);
+
+
+3-->CREATE VIEW CustomerLoanDetails AS
+SELECT C.Custid, C.Custname, (IFNULL(H.Amount, 0) + IFNULL(V.Amount, 0)) AS TotalLoanAmount
+FROM Customer C
+LEFT JOIN HomeLoan H ON C.Custid = H.Custid
+LEFT JOIN VehicleLoan V ON C.Custid = V.Custid;
+
+4-->DELIMITER //
+
+CREATE TRIGGER DisplayHomeLoanDetails
+AFTER INSERT ON HomeLoan
+FOR EACH ROW
+BEGIN
+  DECLARE loanDetails VARCHAR(200);
+  SET loanDetails = CONCAT('HomeLoan Inserted: HLoanid = ', NEW.HLoanid, ', Amount = ', NEW.Amount, ', Custid = ', NEW.Custid);
+  SELECT loanDetails AS HomeLoanDetails;
+END;
+//
+
+DELIMITER ;
+
