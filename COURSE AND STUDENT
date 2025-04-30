@@ -1,0 +1,175 @@
+Let's break down your question step by step, covering the table creation, adding constraints, inserting records, and implementing the necessary queries and operations. I'll provide solutions for both SQL and Python, with a basic implementation for the course management system.
+
+### ✅ SQL Part
+
+#### **1. Create Tables with Constraints**
+
+```sql
+-- Create Course Table
+CREATE TABLE Course (
+    Ccode NUMBER(2) PRIMARY KEY,
+    Course VARCHAR2(10)
+);
+
+-- Create Student Table
+CREATE TABLE Student (
+    Rollno NUMBER(5) PRIMARY KEY,
+    Name VARCHAR2(10),
+    Coursecode NUMBER(2),
+    Mark1 NUMBER(3) CHECK (Mark1 BETWEEN 0 AND 100),
+    Mark2 NUMBER(3) CHECK (Mark2 BETWEEN 0 AND 100),
+    Total NUMBER(5),
+    FOREIGN KEY (Coursecode) REFERENCES Course(Ccode)
+);
+```
+
+Here, the **Student** table includes:
+- `Rollno` as the primary key.
+- `Mark1` and `Mark2` are constrained to accept values between 0 and 100.
+- A foreign key relationship between `Student.Coursecode` and `Course.Ccode`.
+
+---
+
+#### **A. Add the Field `Total` to Table Student**
+
+```sql
+ALTER TABLE Student ADD (Total NUMBER(5));
+```
+
+This command adds the `Total` field to the **Student** table.
+
+---
+
+#### **B. Insert 5 Records into the Table (without input for `Total` field)**
+
+```sql
+-- Insert records into the Course table first
+INSERT INTO Course (Ccode, Course) VALUES (1, 'Math');
+INSERT INTO Course (Ccode, Course) VALUES (2, 'Science');
+INSERT INTO Course (Ccode, Course) VALUES (3, 'English');
+
+-- Insert records into the Student table
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (1001, 'John', 1, 85, 90);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (1002, 'Jane', 2, 78, 88);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (1003, 'David', 3, 95, 92);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (1004, 'Sara', 1, 66, 74);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (1005, 'Mike', 2, 80, 85);
+```
+
+Note: The `Total` field will be left null when inserting records. You can later update it as needed by summing `Mark1` and `Mark2`.
+
+---
+
+#### **C. List the Student Name with the Highest Mark1**
+
+```sql
+SELECT Name
+FROM Student
+WHERE Mark1 = (SELECT MAX(Mark1) FROM Student);
+```
+
+This query lists the student(s) who have the highest `Mark1` score.
+
+---
+
+#### **D. Design and Implement a Course Management System to Add and Delete Courses**
+
+You can implement a simple **Course Management System** using SQL commands for **adding** and **deleting** courses.
+
+**Add a Course:**
+
+```sql
+-- Add a new course
+INSERT INTO Course (Ccode, Course) VALUES (4, 'History');
+```
+
+**Delete a Course:**
+
+```sql
+-- Delete a course
+DELETE FROM Course WHERE Ccode = 4;
+```
+
+To ensure referential integrity, if you try to delete a course that has students enrolled in it, the foreign key constraint would prevent it. To manage this scenario, you might want to first remove students enrolled in that course or set a cascading delete.
+
+---
+
+### ✅ Python Part: Course Management System Using Tkinter
+
+Here’s a **simple Python Tkinter** application to allow for adding and deleting courses. The app will also connect to your **MySQL** database to handle the operations.
+
+```python
+import tkinter as tk
+from tkinter import messagebox
+import mysql.connector
+
+# Database connection
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="yourpassword",
+    database="yourdbname"
+)
+cursor = conn.cursor()
+
+# Function to add a course
+def add_course():
+    course_code = entry_course_code.get()
+    course_name = entry_course_name.get()
+    
+    try:
+        cursor.execute("INSERT INTO Course (Ccode, Course) VALUES (%s, %s)", (course_code, course_name))
+        conn.commit()
+        messagebox.showinfo("Success", "Course added successfully")
+    except Exception as e:
+        conn.rollback()
+        messagebox.showerror("Error", f"Error: {e}")
+
+# Function to delete a course
+def delete_course():
+    course_code = entry_course_code.get()
+    
+    try:
+        cursor.execute("DELETE FROM Course WHERE Ccode = %s", (course_code,))
+        conn.commit()
+        messagebox.showinfo("Success", "Course deleted successfully")
+    except Exception as e:
+        conn.rollback()
+        messagebox.showerror("Error", f"Error: {e}")
+
+# Tkinter UI for Course Management
+root = tk.Tk()
+root.title("Course Management System")
+
+tk.Label(root, text="Course Code:").pack()
+entry_course_code = tk.Entry(root)
+entry_course_code.pack()
+
+tk.Label(root, text="Course Name:").pack()
+entry_course_name = tk.Entry(root)
+entry_course_name.pack()
+
+# Buttons for adding and deleting courses
+btn_add = tk.Button(root, text="Add Course", command=add_course)
+btn_add.pack(pady=10)
+
+btn_delete = tk.Button(root, text="Delete Course", command=delete_course)
+btn_delete.pack(pady=10)
+
+root.mainloop()
+```
+
+### 📝 Summary of the Solution:
+
+- **SQL**:
+  - Create the `Student` and `Course` tables with constraints (Primary Key, Foreign Key, and Check constraints).
+  - Add the `Total` field to the **Student** table.
+  - Insert 5 sample records into the **Student** table.
+  - List the student with the highest `Mark1`.
+  - Add and delete courses using SQL.
+
+- **Python Tkinter Application**:
+  - Simple **Course Management System** to **add** and **delete** courses.
+  - It uses **MySQL** to connect to your database and perform the operations.
+
+Would you like me to provide further guidance or help with another part of the project?

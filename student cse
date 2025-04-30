@@ -1,0 +1,66 @@
+1-->CREATE TABLE Student (
+    Regno INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Dept VARCHAR(50)
+);
+
+-- Insert sample data
+INSERT INTO Student VALUES (101, 'Arun', 'CSE');
+INSERT INTO Student VALUES (102, 'Divya', 'ECE');
+INSERT INTO Student VALUES (103, 'Meena', 'CSE');
+INSERT INTO Student VALUES (104, 'Karthik', 'MECH');
+
+
+2-->CREATE VIEW CSE_Students AS
+SELECT * FROM Student
+WHERE Dept = 'CSE';
+
+
+3-->DECLARE
+    v_regno Student.Regno%TYPE := &regno;
+BEGIN
+    -- Fetching and displaying the student details
+    SELECT Name, Dept
+    INTO :v_name, :v_dept
+    FROM Student
+    WHERE Regno = v_regno;
+    
+    DBMS_OUTPUT.PUT_LINE('Name: ' || :v_name || ', Department: ' || :v_dept);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Student not found.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+
+
+4-->import sqlite3, tkinter as tk
+from tkinter.messagebox import showinfo, showerror
+
+def register():
+    reg, name, dept = e_reg.get(), e_name.get(), e_dept.get()
+    if not (reg and name and dept): showerror("Input Error", "All fields required"); return
+    try:
+        c.execute("INSERT INTO Student VALUES (?, ?, ?)", (reg, name, dept))
+        conn.commit()
+        showinfo("Success", "Student Registered")
+        for e in (e_reg, e_name, e_dept): e.delete(0, tk.END)
+    except sqlite3.IntegrityError:
+        showerror("Error", "Reg No already exists")
+
+conn = sqlite3.connect("college.db")
+c = conn.cursor()
+c.execute("CREATE TABLE IF NOT EXISTS Student (Regno INTEGER PRIMARY KEY, Name TEXT, Dept TEXT)")
+
+w = tk.Tk()
+w.title("Student Registration")
+for i, label in enumerate(("Reg No", "Name", "Department")):
+    tk.Label(w, text=label).grid(row=i, column=0)
+entries = [tk.Entry(w) for _ in range(3)]
+for i, e in enumerate(entries): e.grid(row=i, column=1)
+e_reg, e_name, e_dept = entries
+tk.Button(w, text="Register", command=register).grid(row=3, column=0, columnspan=2)
+w.mainloop()
+conn.close()
+

@@ -1,0 +1,163 @@
+Let's break this down step by step and implement the required solutions.
+
+### ✅ **SQL Part**:
+
+#### **Step 1: Create Tables**
+
+We'll create the following three tables:
+- **Member**: For storing member details.
+- **Book**: For storing book details.
+- **Issue**: For storing issued book details.
+
+```sql
+-- Create Member Table
+CREATE TABLE Member (
+    MemberCode NUMBER PRIMARY KEY,
+    MemberName VARCHAR2(50),
+    PhoneNo VARCHAR2(15)
+);
+
+-- Create Book Table
+CREATE TABLE Book (
+    BookCode NUMBER PRIMARY KEY,
+    CategoryCode NUMBER,
+    BookName VARCHAR2(100),
+    Cost NUMBER(6,2)
+);
+
+-- Create Issue Table
+CREATE TABLE Issue (
+    MemberCode NUMBER,
+    BookCode NUMBER,
+    IssueDate DATE,
+    ReturnDate DATE,
+    FOREIGN KEY (MemberCode) REFERENCES Member(MemberCode),
+    FOREIGN KEY (BookCode) REFERENCES Book(BookCode)
+);
+```
+
+These tables are created with appropriate fields, primary keys, and foreign key constraints.
+
+---
+
+#### **Step 2: SQL Queries**
+
+**A. List all the member names who have taken a book on 8-10-2007**
+
+```sql
+SELECT M.MemberName
+FROM Member M
+JOIN Issue I ON M.MemberCode = I.MemberCode
+WHERE I.IssueDate = TO_DATE('2007-10-08', 'YYYY-MM-DD');
+```
+
+This query joins the **Member** and **Issue** tables to find all the members who took a book on 8th October 2007.
+
+---
+
+**B. List the member codes of the members who have taken books worth more than Rs. 400.00**
+
+```sql
+SELECT DISTINCT I.MemberCode
+FROM Issue I
+JOIN Book B ON I.BookCode = B.BookCode
+WHERE B.Cost > 400;
+```
+
+This query finds the member codes of all members who have taken books worth more than Rs. 400.
+
+---
+
+### ✅ **PL/SQL Part**
+
+#### **C. Write a PL/SQL Block to Generate the Fibonacci Series**
+
+Here’s a PL/SQL block that generates the Fibonacci series up to a given limit.
+
+```sql
+DECLARE
+    num1 NUMBER := 0;
+    num2 NUMBER := 1;
+    next_num NUMBER;
+    limit NUMBER := 10; -- Change this limit as needed
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Fibonacci Series:');
+    DBMS_OUTPUT.PUT_LINE(num1);
+    DBMS_OUTPUT.PUT_LINE(num2);
+    
+    FOR i IN 3..limit LOOP
+        next_num := num1 + num2;
+        DBMS_OUTPUT.PUT_LINE(next_num);
+        num1 := num2;
+        num2 := next_num;
+    END LOOP;
+END;
+```
+
+This PL/SQL block prints the Fibonacci series up to the specified `limit` (in this case, 10).
+
+---
+
+#### **D. Write a PL/SQL Block Using Cursor to Display the Contents of Various Tables Based on the Options**
+
+Here’s a PL/SQL block using a cursor to display the contents of the **Member**, **Book**, and **Issue** tables based on user input options:
+
+```sql
+DECLARE
+    CURSOR option_cursor IS
+        SELECT '1' AS option_value FROM DUAL UNION ALL
+        SELECT '2' FROM DUAL UNION ALL
+        SELECT '3' FROM DUAL;
+        
+    user_option VARCHAR2(10);
+BEGIN
+    -- Get user input for the option
+    DBMS_OUTPUT.PUT_LINE('Select an option:');
+    DBMS_OUTPUT.PUT_LINE('1: Display all members');
+    DBMS_OUTPUT.PUT_LINE('2: Display all books');
+    DBMS_OUTPUT.PUT_LINE('3: Display all issue records');
+    
+    -- Simulating user input
+    user_option := '1'; -- Change this to '2' or '3' to test other options
+    
+    OPEN option_cursor;
+    FETCH option_cursor INTO user_option;
+    CLOSE option_cursor;
+    
+    -- Display results based on the selected option
+    IF user_option = '1' THEN
+        FOR member IN (SELECT * FROM Member) LOOP
+            DBMS_OUTPUT.PUT_LINE('Member Code: ' || member.MemberCode || ', Name: ' || member.MemberName || ', Phone: ' || member.PhoneNo);
+        END LOOP;
+    ELSIF user_option = '2' THEN
+        FOR book IN (SELECT * FROM Book) LOOP
+            DBMS_OUTPUT.PUT_LINE('Book Code: ' || book.BookCode || ', Name: ' || book.BookName || ', Cost: ' || book.Cost);
+        END LOOP;
+    ELSIF user_option = '3' THEN
+        FOR issue IN (SELECT * FROM Issue) LOOP
+            DBMS_OUTPUT.PUT_LINE('Member Code: ' || issue.MemberCode || ', Book Code: ' || issue.BookCode || ', Issue Date: ' || issue.IssueDate || ', Return Date: ' || issue.ReturnDate);
+        END LOOP;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Invalid option.');
+    END IF;
+END;
+```
+
+In this PL/SQL block:
+- A cursor is defined to simulate multiple options.
+- Based on the option, it fetches and displays records from the **Member**, **Book**, or **Issue** tables.
+- The option is hardcoded here as `'1'`, but you can modify it to take dynamic input from the user.
+
+---
+
+### 📝 **Summary**
+
+- **Step 1**: Create the tables `Member`, `Book`, and `Issue` with appropriate constraints.
+- **Step 2**: Perform SQL queries to:
+  - List members who took a book on a specific date.
+  - List member codes who took books worth more than Rs. 400.
+- **PL/SQL**:
+  - Generate the Fibonacci series using a PL/SQL block.
+  - Use a cursor to display table contents based on the user’s option.
+
+Would you like further details or assistance with testing these queries?

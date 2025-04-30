@@ -1,0 +1,60 @@
+-- Create Employee table
+CREATE TABLE Employee (
+    Empno INT PRIMARY KEY,
+    Ename VARCHAR(100),
+    Job VARCHAR(50),
+    MgrId INT,
+    DoB DATE,
+    DoJ DATE,
+    Sal DECIMAL(10, 2),
+    Comm DECIMAL(10, 2),
+    Deptno INT
+);
+
+-- Insert sample data into Employee table
+INSERT INTO Employee (Empno, Ename, Job, MgrId, DoB, DoJ, Sal, Comm, Deptno)
+VALUES (101, 'John Doe', 'Manager', NULL, TO_DATE('1985-05-15', 'YYYY-MM-DD'), TO_DATE('2010-02-20', 'YYYY-MM-DD'), 50000, 2000, 10),
+       (102, 'Jane Smith', 'Clerk', 101, TO_DATE('1990-07-25', 'YYYY-MM-DD'), TO_DATE('2015-03-10', 'YYYY-MM-DD'), 30000, 1500, 20),
+       (103, 'Sara Lee', 'Developer', 101, TO_DATE('1992-08-30', 'YYYY-MM-DD'), TO_DATE('2018-04-05', 'YYYY-MM-DD'), 40000, 1800, 10);
+
+-- Create Department table
+CREATE TABLE Department (
+    Dname VARCHAR(100),
+    Deptno INT PRIMARY KEY,
+    Dloc VARCHAR(100)
+);
+
+-- Insert sample data into Department table
+INSERT INTO Department (Dname, Deptno, Dloc)
+VALUES ('Marketing', 10, 'New York'),
+       ('Sales', 20, 'Los Angeles');
+
+
+1-->SELECT Empno, Ename, Sal, 
+       FLOOR(MONTHS_BETWEEN(SYSDATE, DoJ) / 12) AS Experience
+FROM Employee
+ORDER BY Sal DESC;
+
+
+2-->SELECT Ename
+FROM Employee
+WHERE Deptno = (SELECT Deptno FROM Department WHERE Dname = 'Marketing');
+
+
+3-->SELECT Ename
+FROM Employee
+WHERE TO_CHAR(DoB, 'MM') = TO_CHAR(SYSDATE, 'MM');
+
+
+4-->CREATE OR REPLACE FUNCTION Get_Employee_Details(p_empno INT) RETURN VARCHAR2 AS
+    v_ename Employee.Ename%TYPE;
+BEGIN
+    BEGIN
+        SELECT Ename INTO v_ename FROM Employee WHERE Empno = p_empno;
+        RETURN 'Employee Name: ' || v_ename;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 'Employee not found';
+    END;
+END;
+

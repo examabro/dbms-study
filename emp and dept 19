@@ -1,0 +1,122 @@
+Let's break this problem down step by step and create the required SQL queries and PL/SQL function.
+
+### ✅ **SQL Part:**
+
+#### **Step 1: Create the Tables**
+
+First, we will create the two tables: **Employee** and **Department** with column-level constraints.
+
+```sql
+-- Create Department Table
+CREATE TABLE Department (
+    Depno NUMBER(2) PRIMARY KEY,
+    Depname VARCHAR2(15),
+    Deplocation VARCHAR2(10)
+);
+
+-- Create Employee Table
+CREATE TABLE Employee (
+    Empno NUMBER(5) PRIMARY KEY,
+    Empname VARCHAR2(20),
+    Designation VARCHAR2(10),
+    Date_of_join DATE,
+    Salary NUMBER(9,2) NOT NULL,
+    Depno NUMBER(2),
+    FOREIGN KEY (Depno) REFERENCES Department(Depno)
+);
+```
+
+In this setup:
+- The **Employee** table has a foreign key constraint linking **Depno** to the **Department** table.
+- The **Salary** field in the **Employee** table is defined as `NOT NULL`.
+
+---
+
+#### **Step 2: SQL Queries**
+
+**A. Display the number of employees in each department with the department numbers in descending order**
+
+```sql
+SELECT E.Depno, COUNT(*) AS EmployeeCount
+FROM Employee E
+GROUP BY E.Depno
+ORDER BY E.Depno DESC;
+```
+
+This query groups the employees by department number and counts the number of employees in each department, ordering the results by department number in descending order.
+
+---
+
+**B. Display designation, department number, and total number of employees designation wise and department wise**
+
+```sql
+SELECT E.Designation, E.Depno, COUNT(*) AS EmployeeCount
+FROM Employee E
+GROUP BY E.Designation, E.Depno
+ORDER BY E.Depno, E.Designation;
+```
+
+This query groups the employees by both **Designation** and **Depno**, counting the number of employees in each designation and department combination.
+
+---
+
+**C. List the Employee names and their department names (Use Outer Join)**
+
+We will use an **Outer Join** to display all employees, including those who may not be assigned to a department (in case the **Depno** in **Employee** is `NULL`).
+
+```sql
+SELECT E.Empname, D.Depname
+FROM Employee E
+LEFT OUTER JOIN Department D
+ON E.Depno = D.Depno;
+```
+
+This query lists all employees and their corresponding department names. If an employee does not have a department assigned, the **Depname** will be `NULL` due to the outer join.
+
+---
+
+### ✅ **PL/SQL Part:**
+
+**D. Write a function to calculate the factorial of a given number**
+
+Here is a PL/SQL function to calculate the factorial of a number:
+
+```sql
+CREATE OR REPLACE FUNCTION factorial(n IN NUMBER) RETURN NUMBER IS
+    result NUMBER := 1;
+BEGIN
+    FOR i IN 1..n LOOP
+        result := result * i;
+    END LOOP;
+    RETURN result;
+END;
+```
+
+**Explanation:**
+- This function calculates the factorial of the input number `n`.
+- It initializes the `result` to 1, then multiplies it by each integer from 1 to `n` in a loop.
+- The `RETURN` statement returns the calculated factorial.
+
+To test the function, you can call it like this:
+
+```sql
+SELECT factorial(5) FROM DUAL;  -- This will return 120
+```
+
+---
+
+### 📝 **Summary**
+
+1. **Tables**: Created `Employee` and `Department` tables with constraints:
+   - **Employee**: Contains details about employees with a foreign key reference to the `Department` table.
+   - **Department**: Contains department details.
+   
+2. **SQL Queries**:
+   - **A**: Display the number of employees in each department ordered by department number.
+   - **B**: Display the designation and department number with the total number of employees.
+   - **C**: Display employee names and their department names using an outer join.
+
+3. **PL/SQL Function**:
+   - **D**: A function to calculate the factorial of a given number using a loop.
+
+Would you like to test or expand on any of these queries or the PL/SQL function?

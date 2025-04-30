@@ -1,0 +1,88 @@
+Here is the bare minimum code for **Question 14** with the SQL commands and PL/SQL block:
+
+---
+
+### **Step 1: Create the Tables**
+
+```sql
+-- Create Course table
+CREATE TABLE Course (
+    Ccode NUMBER(2) PRIMARY KEY,
+    Course VARCHAR2(10)
+);
+
+-- Create Student table with constraints
+CREATE TABLE Student (
+    Rollno NUMBER(5) PRIMARY KEY,
+    Name VARCHAR2(10),
+    Coursecode NUMBER(2),
+    Mark1 NUMBER(3) CHECK (Mark1 BETWEEN 0 AND 100),
+    Mark2 NUMBER(3) CHECK (Mark2 BETWEEN 0 AND 100),
+    CONSTRAINT fk_course FOREIGN KEY (Coursecode) REFERENCES Course(Ccode)
+);
+```
+
+---
+
+### **Step 2: Alter the Student Table to Add `Total` Field**
+
+```sql
+-- Add Total field to Student table
+ALTER TABLE Student ADD (Total NUMBER(5));
+```
+
+---
+
+### **Step 3: Insert Records into the Tables**
+
+```sql
+-- Insert records into Course table
+INSERT INTO Course (Ccode, Course) VALUES (1, 'Math');
+INSERT INTO Course (Ccode, Course) VALUES (2, 'Science');
+INSERT INTO Course (Ccode, Course) VALUES (3, 'English');
+INSERT INTO Course (Ccode, Course) VALUES (4, 'History');
+INSERT INTO Course (Ccode, Course) VALUES (5, 'Geography');
+
+-- Insert records into Student table
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (1, 'Alice', 1, 85, 90);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (2, 'Bob', 2, 78, 88);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (3, 'Charlie', 3, 92, 95);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (4, 'David', 4, 70, 75);
+INSERT INTO Student (Rollno, Name, Coursecode, Mark1, Mark2) VALUES (5, 'Eva', 5, 80, 85);
+```
+
+---
+
+### **Step 4: List the Student Names and Their Course Names**
+
+```sql
+-- List student names and their course names
+SELECT S.Name, C.Course
+FROM Student S
+JOIN Course C ON S.Coursecode = C.Ccode;
+```
+
+---
+
+### **Step 5: PL/SQL Block to Find Whether the Given Number is Odd or Even**
+
+```sql
+DECLARE
+    num NUMBER := &number;  -- Replace &number with the input number
+BEGIN
+    IF MOD(num, 2) = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Even');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Odd');
+    END IF;
+END;
+```
+
+---
+
+### **To Test the PL/SQL Block**
+Run the PL/SQL block and input any number as the value of `&number` when prompted. The result will display either `Even` or `Odd`.
+
+---
+
+This is the minimal code solution for the problem. Let me know if you need further assistance!

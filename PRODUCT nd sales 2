@@ -1,0 +1,103 @@
+CREATE TABLE Product (
+    Prodid INT PRIMARY KEY,
+    Prodesc VARCHAR(100),
+    Price DECIMAL(10, 2),
+    Stock INT
+);
+
+
+CREATE TABLE Sales (
+    Salesid INT PRIMARY KEY,
+    Prodid INT,
+    qty INT,
+    FOREIGN KEY (Prodid) REFERENCES Product(Prodid)
+);
+
+
+1-->ALTER TABLE Product
+ADD reorder INT DEFAULT 50;
+
+2-->SELECT 
+    s.Salesid,
+    p.Prodesc,
+    s.qty,
+    p.Price,
+    (s.qty * p.Price) AS Total
+FROM 
+    Sales s
+JOIN 
+    Product p ON s.Prodid = p.Prodid;
+
+
+3-->SELECT 
+    Prodid
+FROM 
+    Sales
+GROUP BY 
+    Prodid
+ORDER BY 
+    SUM(qty) DESC;
+
+
+4-->import sqlite3
+
+# Connect to (or create) the database
+conn = sqlite3.connect("store.db")
+cursor = conn.cursor()
+
+# Create Users table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Users (
+    userid INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT
+)
+''')
+
+# Create Product table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Product (
+    Prodid INTEGER PRIMARY KEY,
+    Prodesc TEXT,
+    Price REAL,
+    Stock INTEGER,
+    reorder INTEGER DEFAULT 50
+)
+''')
+
+# Insert sample data (run once)
+cursor.execute("INSERT OR IGNORE INTO Users (username, password) VALUES ('john', '1234')")
+cursor.execute("INSERT OR IGNORE INTO Product (Prodid, Prodesc, Price, Stock) VALUES (1, 'Pen', 10.0, 100)")
+cursor.execute("INSERT OR IGNORE INTO Product (Prodid, Prodesc, Price, Stock) VALUES (2, 'Book', 50.0, 0)")
+conn.commit()
+
+
+# Login and Stock Check
+username = input("Enter username: ")
+password = input("Enter password: ")
+
+cursor.execute("SELECT * FROM Users WHERE username = ? AND password = ?", (username, password))
+user = cursor.fetchone()
+
+if user:
+    print("Login successful!")
+
+    prodid = input("Enter Product ID to check stock: ")
+    cursor.execute("SELECT Prodesc, Stock FROM Product WHERE Prodid = ?", (prodid,))
+    product = cursor.fetchone()
+
+    if product:
+        desc, stock = product
+        if stock > 0:
+            print(f"✅ Product '{desc}' is available with {stock} in stock.")
+        else:
+            print(f"❌ Product '{desc}' is out of stock.")
+    else:
+        print("⚠️ Product ID not found.")
+else:
+    print("❌ Invalid username or password.")
+
+# Close connection
+cursor.close()
+conn.close()
+

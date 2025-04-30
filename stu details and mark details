@@ -1,0 +1,54 @@
+-- Create the student details table
+CREATE TABLE stu_details (
+    reg_no INT PRIMARY KEY,
+    stu_name VARCHAR(100),
+    DOB DATE,
+    address VARCHAR(255),
+    city VARCHAR(50)
+);
+
+-- Insert sample data into stu_details table
+INSERT INTO stu_details (reg_no, stu_name, DOB, address, city) 
+VALUES (1, 'John Doe', TO_DATE('2000-05-15', 'YYYY-MM-DD'), '123 Elm Street', 'New York'),
+       (2, 'Jane Smith', TO_DATE('2001-08-25', 'YYYY-MM-DD'), '456 Oak Avenue', 'Los Angeles');
+
+-- Create the marks details table
+CREATE TABLE mark_details (
+    reg_no INT PRIMARY KEY,
+    mark1 INT,
+    mark2 INT,
+    mark3 INT,
+    total INT
+);
+
+-- Insert sample data into mark_details table
+INSERT INTO mark_details (reg_no, mark1, mark2, mark3, total) 
+VALUES (1, 75, 80, 85, 240),
+       (2, 90, 95, 100, 285);
+
+
+1-->ALTER TABLE mark_details ADD COLUMN average LONG;
+
+
+2-->SELECT reg_no, stu_name, MONTHS_BETWEEN(SYSDATE, DOB) AS months 
+FROM stu_details;
+
+
+3-->ALTER TABLE stu_details DROP COLUMN address;
+
+
+4-->CREATE OR REPLACE PROCEDURE Calculate_Marks_Summary AS
+    v_sum    NUMBER;
+    v_avg    NUMBER;
+BEGIN
+    FOR student IN (SELECT * FROM mark_details) LOOP
+        -- Calculate sum of marks
+        v_sum := student.mark1 + student.mark2 + student.mark3;
+        -- Calculate average
+        v_avg := v_sum / 3;
+
+        -- Output the result
+        DBMS_OUTPUT.PUT_LINE('Reg No: ' || student.reg_no || ' Sum: ' || v_sum || ' Average: ' || v_avg);
+    END LOOP;
+END;
+

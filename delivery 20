@@ -1,0 +1,167 @@
+### **Step 1: Create Tables**
+
+Let's create two tables: **order_master** and **order_detail** with the given attributes.
+
+#### **Order Master Table:**
+
+```sql
+CREATE TABLE order_master (
+    Orderno VARCHAR2(5) PRIMARY KEY,
+    Ordate DATE,
+    Vencode VARCHAR2(5),
+    Ordstatus CHAR(1) CHECK (Ordstatus IN ('p', 'd')),  -- 'p' for pending, 'd' for delivered
+    Del_date DATE
+);
+```
+
+In the `order_master` table:
+- **Orderno** is the primary key.
+- **Ordstatus** is a `CHAR(1)` field and constrained to only accept 'p' (pending) or 'd' (delivered).
+- **Del_date** is the delivery date of the order.
+
+#### **Order Detail Table:**
+
+```sql
+CREATE TABLE order_detail (
+    Orderno VARCHAR2(5),
+    Itemcode VARCHAR2(5),
+    Qty_ord NUMBER(5),
+    Qty_deld NUMBER(5),
+    PRIMARY KEY (Orderno, Itemcode),
+    FOREIGN KEY (Orderno) REFERENCES order_master(Orderno)
+);
+```
+
+In the `order_detail` table:
+- **Orderno** is a foreign key referencing **Orderno** from `order_master`.
+- The primary key is a composite of **Orderno** and **Itemcode**.
+- The **Qty_ord** field indicates the ordered quantity, and **Qty_deld** shows the delivered quantity.
+
+---
+
+### **Step 2: SQL Queries**
+
+#### **A. Display the information on orders being handled by a vendor whose Vencode is ‘V004’ according to the delivery date order**
+
+```sql
+SELECT OM.Orderno, OM.Ordate, OM.Vencode, OM.Ordstatus, OM.Del_date
+FROM order_master OM
+WHERE OM.Vencode = 'V004'
+ORDER BY OM.Del_date;
+```
+
+This query:
+- Retrieves orders where the vendor code (`Vencode`) is 'V004'.
+- Orders the results by the **Del_date** (Delivery Date).
+
+---
+
+#### **B. List the orders which have been placed after ’01-Jan-2018’ and before ’01-Jul-2018’**
+
+```sql
+SELECT Orderno, Ordate, Vencode, Ordstatus, Del_date
+FROM order_master
+WHERE Ordate > TO_DATE('01-JAN-2018', 'DD-MON-YYYY')
+AND Ordate < TO_DATE('01-JUL-2018', 'DD-MON-YYYY');
+```
+
+This query:
+- Filters orders placed after January 1, 2018, and before July 1, 2018, based on the **Ordate**.
+
+---
+
+#### **C. List out the pending orders**
+
+```sql
+SELECT Orderno, Ordate, Vencode, Ordstatus, Del_date
+FROM order_master
+WHERE Ordstatus = 'p';
+```
+
+This query:
+- Retrieves orders that are still pending (`Ordstatus = 'p'`).
+
+---
+
+### **Step 3: Design and Implement Order-Delivery System Form**
+
+Since you want to design a simple form using **Python Tkinter** to handle adding and deleting order delivery details, I’ll create a basic Tkinter interface.
+
+#### **Python Tkinter Application for Order-Delivery System**
+
+```python
+import tkinter as tk
+from tkinter import messagebox
+
+# Function to add order delivery details
+def add_order_delivery():
+    orderno = entry_orderno.get()
+    itemcode = entry_itemcode.get()
+    qty_ord = entry_qty_ord.get()
+    qty_deld = entry_qty_deld.get()
+    
+    # Basic validation
+    if not orderno or not itemcode or not qty_ord or not qty_deld:
+        messagebox.showerror("Input Error", "All fields must be filled!")
+        return
+    
+    # Normally, here you'd insert the data into the database
+    messagebox.showinfo("Success", f"Order delivery added for Orderno: {orderno} and Itemcode: {itemcode}")
+
+# Function to delete order delivery details
+def delete_order_delivery():
+    orderno = entry_orderno.get()
+    itemcode = entry_itemcode.get()
+    
+    # Basic validation
+    if not orderno or not itemcode:
+        messagebox.showerror("Input Error", "Orderno and Itemcode are required for deletion!")
+        return
+    
+    # Normally, here you'd delete the data from the database
+    messagebox.showinfo("Success", f"Order delivery details deleted for Orderno: {orderno} and Itemcode: {itemcode}")
+
+# Create the main window
+root = tk.Tk()
+root.title("Order-Delivery System")
+
+# Labels and entry fields for adding and deleting order delivery details
+tk.Label(root, text="Orderno").grid(row=0, column=0, padx=10, pady=10)
+entry_orderno = tk.Entry(root)
+entry_orderno.grid(row=0, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Itemcode").grid(row=1, column=0, padx=10, pady=10)
+entry_itemcode = tk.Entry(root)
+entry_itemcode.grid(row=1, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Quantity Ordered").grid(row=2, column=0, padx=10, pady=10)
+entry_qty_ord = tk.Entry(root)
+entry_qty_ord.grid(row=2, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Quantity Delivered").grid(row=3, column=0, padx=10, pady=10)
+entry_qty_deld = tk.Entry(root)
+entry_qty_deld.grid(row=3, column=1, padx=10, pady=10)
+
+# Buttons to add and delete delivery details
+tk.Button(root, text="Add Order Delivery", command=add_order_delivery).grid(row=4, column=0, padx=10, pady=10)
+tk.Button(root, text="Delete Order Delivery", command=delete_order_delivery).grid(row=4, column=1, padx=10, pady=10)
+
+# Run the application
+root.mainloop()
+```
+
+### **Explanation of the Tkinter App:**
+
+- **Fields**: The form contains fields for `Orderno`, `Itemcode`, `Qty_ord`, and `Qty_deld`, which represent the order details.
+- **Buttons**: There are two buttons:
+  - **Add Order Delivery**: Adds the delivery details (though it's just a mock function for now).
+  - **Delete Order Delivery**: Deletes the delivery details (again, a mock function).
+- **Validation**: Basic validation checks ensure that all fields are filled before proceeding.
+
+---
+
+### **Step 4: Integration**
+
+This form interacts with a database in a real-world scenario. The `add_order_delivery` and `delete_order_delivery` functions would need to be modified to connect to a database and perform actual insert and delete operations using SQL queries.
+
+Would you like further assistance on integrating this with a database (e.g., using `sqlite3` or another library)?

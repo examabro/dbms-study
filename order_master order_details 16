@@ -1,0 +1,88 @@
+### **Step 1: Create the Tables**
+
+```sql
+-- Create order_master table
+CREATE TABLE order_master (
+    Orderno VARCHAR2(5) PRIMARY KEY,
+    Ordate DATE,
+    Vencode VARCHAR2(5),
+    Ordstatus CHAR(1) CHECK (Ordstatus IN ('p', 'd')),  -- 'p' for pending, 'd' for delivered
+    Del_date DATE
+);
+
+-- Create order_detail table
+CREATE TABLE order_detail (
+    Orderno VARCHAR2(5),
+    Itemcode VARCHAR2(5),
+    Qty_ord NUMBER(5),
+    Qty_deld NUMBER(5),
+    PRIMARY KEY (Orderno, Itemcode),
+    FOREIGN KEY (Orderno) REFERENCES order_master(Orderno)
+);
+```
+
+---
+
+### **Step 2: SQL Queries for Operations**
+
+#### **A. Display the information on orders being handled by a vendor whose `Vencode` is 'V004' according to the delivery date order**
+```sql
+SELECT * 
+FROM order_master
+WHERE Vencode = 'V004'
+ORDER BY Del_date;
+```
+
+#### **B. List the orders which have been placed after '01-Jan-2006' and before '01-Jul-2006'**
+```sql
+SELECT * 
+FROM order_master
+WHERE Ordate > TO_DATE('01-Jan-2006', 'DD-Mon-YYYY') 
+AND Ordate < TO_DATE('01-Jul-2006', 'DD-Mon-YYYY');
+```
+
+#### **C. List out the pending orders**
+```sql
+SELECT * 
+FROM order_master
+WHERE Ordstatus = 'p';
+```
+
+---
+
+### **Step 3: PL/SQL Block to Find Whether the Given Year is a Leap Year or Not**
+
+```sql
+DECLARE
+    v_year NUMBER := &year; -- Take the year as input
+    v_is_leap BOOLEAN;
+BEGIN
+    IF (MOD(v_year, 400) = 0) OR (MOD(v_year, 4) = 0 AND MOD(v_year, 100) != 0) THEN
+        v_is_leap := TRUE;
+    ELSE
+        v_is_leap := FALSE;
+    END IF;
+
+    IF v_is_leap THEN
+        DBMS_OUTPUT.PUT_LINE(v_year || ' is a Leap Year.');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE(v_year || ' is NOT a Leap Year.');
+    END IF;
+END;
+```
+
+---
+
+### **Explanation:**
+
+1. **SQL Queries**:
+   - **A**: The query filters the orders based on the vendor code and orders them by delivery date.
+   - **B**: The query filters orders placed between January 1, 2006, and July 1, 2006.
+   - **C**: The query selects orders that are still pending (i.e., with `Ordstatus = 'p'`).
+   
+2. **PL/SQL Block**:
+   - The PL/SQL block checks whether the provided year is a leap year or not using the standard leap year calculation rules. It prints the result using `DBMS_OUTPUT.PUT_LINE`.
+
+---
+
+Let me know if you need further assistance!
